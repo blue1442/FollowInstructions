@@ -7,6 +7,9 @@
 
 #Starter Content
 Content/StarterContent/*
+Content/HQ_ResidentialHouse/*
+Content/FootstepSound/*
+Content/Environment_Set/*
 
 # Compiled Object files
 *.slo
