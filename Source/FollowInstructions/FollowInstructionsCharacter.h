@@ -18,6 +18,9 @@ class AFollowInstructionsCharacter : public ACharacter
 public:
 	AFollowInstructionsCharacter();
 
+	//toggled when user hits shift
+	bool bIsSprinting;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -26,12 +29,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	class AFIPlayerController* PlayerController;
+
 protected:
+	virtual void BeginPlay() override;
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 	void TurnRight(float Value);
+	void MoveRight(float Value);
 	void LookUp(float Value);
+	void ShiftDown();
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

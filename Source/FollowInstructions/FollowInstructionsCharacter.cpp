@@ -8,17 +8,17 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "FIPlayerController.h"
 //////////////////////////////////////////////////////////////////////////
 // AFollowInstructionsCharacter
 
 AFollowInstructionsCharacter::AFollowInstructionsCharacter() {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(36.f, 80.f);
 
 	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
+	BaseTurnRate = 15.f;
+	BaseLookUpRate = 15.f;
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -40,27 +40,27 @@ AFollowInstructionsCharacter::AFollowInstructionsCharacter() {
 	// Create a follow camera
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	PlayerCamera->SetupAttachment(GetRootComponent()); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	PlayerCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
+	PlayerCamera->bUsePawnControlRotation = true; // Camera does rotate relative to arm
+	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+
+void AFollowInstructionsCharacter::BeginPlay() {
+	Super::BeginPlay();
+	PlayerController = Cast<AFIPlayerController>(GetController());
+}
 
 void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("ShiftDown", IE_Pressed, this, &AFollowInstructionsCharacter::ShiftDown);
+	//"ShiftDown", this, &AFollowInstructionsCharacter::ShiftDown
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFollowInstructionsCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("TurnRight", this, &AFollowInstructionsCharacter::TurnRight);
 	PlayerInputComponent->BindAxis("LookUp", this, &AFollowInstructionsCharacter::LookUp);
-
-
-
 }
 
 void AFollowInstructionsCharacter::MoveForward(float Value) {
@@ -72,12 +72,38 @@ void AFollowInstructionsCharacter::MoveForward(float Value) {
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
 	}
 }
 void AFollowInstructionsCharacter::TurnRight(float Value) {
-	if (Controller) AddControllerYawInput(Value);
+	if (Controller) {
+		AddControllerYawInput(Value);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
+	}
 }
 
 void AFollowInstructionsCharacter::LookUp(float Value) {
-	if (Controller) AddControllerPitchInput(Value);
+	if (Controller) {
+		AddControllerPitchInput(Value);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
+	}
+}
+
+void AFollowInstructionsCharacter::ShiftDown() {
+	//player has pressed shift key, what happens?
+}
+
+void AFollowInstructionsCharacter::MoveRight(float Value) {
+	if (Controller) {
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(Direction, Value);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
+	}
 }
