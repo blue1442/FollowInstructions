@@ -57,7 +57,6 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 	check(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("ShiftDown", IE_Pressed, this, &AFollowInstructionsCharacter::ShiftDown);
-	//"ShiftDown", this, &AFollowInstructionsCharacter::ShiftDown
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFollowInstructionsCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("TurnRight", this, &AFollowInstructionsCharacter::TurnRight);
 	PlayerInputComponent->BindAxis("LookUp", this, &AFollowInstructionsCharacter::LookUp);
