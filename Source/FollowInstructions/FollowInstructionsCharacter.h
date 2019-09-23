@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "FIGlobal.h"
 #include "FollowInstructionsCharacter.generated.h"
+
+
 
 UCLASS(config=Game)
 class AFollowInstructionsCharacter : public ACharacter
@@ -36,7 +39,7 @@ public:
 	float RunSpeed = 400;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
-	float WalkSpeed = 250;
+	float WalkSpeed = 300;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
 	bool bCheckingPhone;
@@ -46,6 +49,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 	class UAnimMontage* CheckMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Location")
+	EPlayerLocation CurrentLocation;
 
 private:
 	
@@ -82,5 +88,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetWalkSpeed();
 
+	UFUNCTION(BlueprintCallable)
+	void SetCharacterLocation(EPlayerLocation NewLocation);
 };
 

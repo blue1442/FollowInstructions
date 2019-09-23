@@ -31,6 +31,8 @@ AFollowInstructionsCharacter::AFollowInstructionsCharacter() {
 
 	bCheckingList = false;
 	bCheckingPhone = false;
+
+	CurrentLocation = EPlayerLocation::EPLS_None;
 }
 
 
@@ -60,6 +62,10 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 
 float AFollowInstructionsCharacter::GetRunSpeed() { return RunSpeed; }
 float AFollowInstructionsCharacter::GetWalkSpeed() { return WalkSpeed; }
+
+void AFollowInstructionsCharacter::SetCharacterLocation(EPlayerLocation NewLocation) {
+	CurrentLocation = NewLocation;
+}
 
 
 
