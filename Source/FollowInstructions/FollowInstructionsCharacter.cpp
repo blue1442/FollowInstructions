@@ -8,48 +8,36 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Animation/AnimInstance.h"
 #include "FIPlayerController.h"
 //////////////////////////////////////////////////////////////////////////
 // AFollowInstructionsCharacter
 
 AFollowInstructionsCharacter::AFollowInstructionsCharacter() {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(36.f, 80.f);
+	GetCapsuleComponent()->InitCapsuleSize(30.f, 70.0f);
 
 	// set our turn rates for input
-	BaseTurnRate = 15.f;
-	BaseLookUpRate = 15.f;
+	BaseTurnRate = 45.f;
+	BaseLookUpRate = 45.f;
 
-	// Don't rotate when the controller rotates. Let that just affect the camera.
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
-	GetCharacterMovement()->JumpZVelocity = 600.f;
-	GetCharacterMovement()->AirControl = 0.2f;
-
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	//CameraBoom->SetupAttachment(RootComponent);
-	//CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	//CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-
-	// Create a follow camera
+	// Create a CameraComponent	
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
-	PlayerCamera->SetupAttachment(GetRootComponent()); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	PlayerCamera->bUsePawnControlRotation = true; // Camera does rotate relative to arm
-	
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	PlayerCamera->SetupAttachment(GetCapsuleComponent());
+	//PlayerCamera->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
+	PlayerCamera->bUsePawnControlRotation = true;
+
+	bCheckingList = false;
+	bCheckingPhone = false;
 }
 
 
 void AFollowInstructionsCharacter::BeginPlay() {
 	Super::BeginPlay();
 	PlayerController = Cast<AFIPlayerController>(GetController());
+	PlayerCamera->AttachTo(GetMesh(), "Head");
 }
 
 void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
@@ -57,23 +45,61 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 	check(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("ShiftDown", IE_Pressed, this, &AFollowInstructionsCharacter::ShiftDown);
+	PlayerInputComponent->BindAction("ShiftDown", IE_Released, this, &AFollowInstructionsCharacter::ShiftUp);
+
+	PlayerInputComponent->BindAction("QButton", IE_Pressed, this, &AFollowInstructionsCharacter::CheckPhoneStart);
+	PlayerInputComponent->BindAction("QButton", IE_Released, this, &AFollowInstructionsCharacter::CheckPhoneEnd);
+
+	PlayerInputComponent->BindAction("EButton", IE_Pressed, this, &AFollowInstructionsCharacter::CheckListStart);
+	PlayerInputComponent->BindAction("EButton", IE_Released, this, &AFollowInstructionsCharacter::CheckListEnd);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFollowInstructionsCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("TurnRight", this, &AFollowInstructionsCharacter::TurnRight);
 	PlayerInputComponent->BindAxis("LookUp", this, &AFollowInstructionsCharacter::LookUp);
 }
 
-void AFollowInstructionsCharacter::MoveForward(float Value) {
-	if (Controller && (Value != 0.0f)) {
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+float AFollowInstructionsCharacter::GetRunSpeed() { return RunSpeed; }
+float AFollowInstructionsCharacter::GetWalkSpeed() { return WalkSpeed; }
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+
+
+void AFollowInstructionsCharacter::MoveForward(float Value) {
+	if (Controller) {
+		AddMovementInput(GetActorForwardVector(), Value);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
 	}
+}
+void AFollowInstructionsCharacter::CheckPhoneStart() {
+	if (!bCheckingPhone && !bCheckingList) {
+		bCheckingPhone = true;
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && CheckMontage) {
+			AnimInstance->Montage_Play(CheckMontage, 1.0f);
+			AnimInstance->Montage_JumpToSection(FName("CheckTime"), CheckMontage);
+		}
+	}
+}
+
+void AFollowInstructionsCharacter::CheckPhoneEnd() {
+	bCheckingPhone = false;
+}
+
+void AFollowInstructionsCharacter::CheckListStart() {
+	if (!bCheckingPhone && !bCheckingList) {
+		bCheckingList = true;
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance && CheckMontage) {
+			AnimInstance->Montage_Play(CheckMontage, 1.0f);
+			AnimInstance->Montage_JumpToSection(FName("CheckList"), CheckMontage);
+		}
+	}
+
+}
+
+void AFollowInstructionsCharacter::CheckListEnd() {
+	bCheckingList = false;
+
 }
 void AFollowInstructionsCharacter::TurnRight(float Value) {
 	if (Controller) {
@@ -92,16 +118,18 @@ void AFollowInstructionsCharacter::LookUp(float Value) {
 }
 
 void AFollowInstructionsCharacter::ShiftDown() {
-	//player has pressed shift key, what happens?
+	bIsSprinting = true;
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+}
+
+void AFollowInstructionsCharacter::ShiftUp() {
+	bIsSprinting = false;
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void AFollowInstructionsCharacter::MoveRight(float Value) {
 	if (Controller) {
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		AddMovementInput(Direction, Value);
+		AddMovementInput(GetActorRightVector(), Value);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
 	}

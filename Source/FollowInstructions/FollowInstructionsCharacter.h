@@ -32,15 +32,40 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
 	class AFIPlayerController* PlayerController;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
+	float RunSpeed = 400;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
+	float WalkSpeed = 250;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
+	bool bCheckingPhone;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
+	bool bCheckingList;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
+	class UAnimMontage* CheckMontage;
+
+private:
+	
+	
+	
+
 protected:
 	virtual void BeginPlay() override;
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
+	void CheckPhoneStart();
+	void CheckPhoneEnd();
+	void CheckListStart();
+	void CheckListEnd();
 	void TurnRight(float Value);
 	void MoveRight(float Value);
 	void LookUp(float Value);
 	void ShiftDown();
+	void ShiftUp();
 
 protected:
 	// APawn interface
@@ -50,5 +75,12 @@ protected:
 public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetPlayerCamera() const { return PlayerCamera; }
+	
+	UFUNCTION(BlueprintCallable)
+	float GetRunSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	float GetWalkSpeed();
+
 };
 
