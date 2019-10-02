@@ -56,6 +56,7 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("EButton", IE_Released, this, &AFollowInstructionsCharacter::CheckListEnd);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFollowInstructionsCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AFollowInstructionsCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("TurnRight", this, &AFollowInstructionsCharacter::TurnRight);
 	PlayerInputComponent->BindAxis("LookUp", this, &AFollowInstructionsCharacter::LookUp);
 }
