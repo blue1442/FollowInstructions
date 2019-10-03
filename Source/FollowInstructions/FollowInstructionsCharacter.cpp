@@ -136,7 +136,8 @@ void AFollowInstructionsCharacter::ShiftUp() {
 
 void AFollowInstructionsCharacter::MoveRight(float Value) {
 	if (Controller) {
-		AddMovementInput(GetActorRightVector(), Value);
+		auto Direction = GetActorRightVector();
+		AddMovementInput(Direction, Value);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("Could not find controller!"));
 	}
