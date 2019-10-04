@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimInstance.h"
 #include "FIPlayerController.h"
+
 //////////////////////////////////////////////////////////////////////////
 // AFollowInstructionsCharacter
 
@@ -39,7 +40,7 @@ AFollowInstructionsCharacter::AFollowInstructionsCharacter() {
 void AFollowInstructionsCharacter::BeginPlay() {
 	Super::BeginPlay();
 	PlayerController = Cast<AFIPlayerController>(GetController());
-	PlayerCamera->AttachTo(GetMesh(), "Head");
+	//PlayerCamera->AttachTo(GetMesh(), "Head");
 }
 
 void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
@@ -85,6 +86,8 @@ void AFollowInstructionsCharacter::CheckPhoneStart() {
 			AnimInstance->Montage_Play(CheckMontage, 1.0f);
 			AnimInstance->Montage_JumpToSection(FName("CheckTime"), CheckMontage);
 		}
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("GetTimeSeconds: %f"), Time);
 	}
 }
 

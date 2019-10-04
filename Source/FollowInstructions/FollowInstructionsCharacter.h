@@ -53,6 +53,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Location")
 	EPlayerLocation CurrentLocation;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Location")
+	FDateTime StartDateTime;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Location")
+	FDateTime CurrentDateTime;
+
 private:
 	
 	
