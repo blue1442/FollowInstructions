@@ -59,13 +59,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Location")
 	FDateTime CurrentDateTime;
 
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Location")
+	int32 TimeMultiplier = 4;
 
 private:
 	float SecondsAtLastCheck;
-	
-	
 
+	
 protected:
 	virtual void BeginPlay() override;
 
