@@ -47,7 +47,7 @@ void AFollowInstructionsCharacter::BeginPlay() {
 	CurrentDateTime = FDateTime(2002, 5, 15, 19);
 	SecondsAtLastCheck = 0.f;
 	FTimerHandle Timerhandle;
-	GetWorldTimerManager().SetTimer(Timerhandle, this, &AFollowInstructionsCharacter::UpdateCurrentDateTime, 15.0f, true);
+	GetWorldTimerManager().SetTimer(Timerhandle, this, &AFollowInstructionsCharacter::UpdateCurrentDateTime, 1.0f, true);
 }
 
 void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
@@ -152,7 +152,7 @@ void AFollowInstructionsCharacter::UpdateCurrentDateTime() {
 	auto TimeToUse = TimeInSeconds - SecondsAtLastCheck;
 	SecondsAtLastCheck = TimeInSeconds;
 
-	CurrentDateTime += FTimespan(0, 0, (int32) TimeToUse * 4);
+	CurrentDateTime += FTimespan(0, 0, (int32) TimeToUse * TimeMultiplier);
 	GetTime();
 	/*int32 TimeMultiplier = 15;
 	int32 ModMinutes = (CurrentDateTime.GetMinute + TimeToUse / TimeMultiplier) % 60;
