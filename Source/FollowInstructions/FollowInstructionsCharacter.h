@@ -63,8 +63,6 @@ public:
 	int32 TimeMultiplier = 4;
 
 private:
-	float SecondsAtLastCheck;
-
 	
 protected:
 	virtual void BeginPlay() override;

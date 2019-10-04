@@ -45,7 +45,6 @@ void AFollowInstructionsCharacter::BeginPlay() {
 	//PlayerCamera->AttachTo(GetMesh(), "Head");
 	StartDateTime = FDateTime(2002, 5, 15, 19);
 	CurrentDateTime = FDateTime(2002, 5, 15, 19);
-	SecondsAtLastCheck = 0.f;
 	FTimerHandle Timerhandle;
 	GetWorldTimerManager().SetTimer(Timerhandle, this, &AFollowInstructionsCharacter::UpdateCurrentDateTime, 1.0f, true);
 }
@@ -149,10 +148,8 @@ void AFollowInstructionsCharacter::ShiftUp() {
 
 void AFollowInstructionsCharacter::UpdateCurrentDateTime() {
 	auto TimeInSeconds = GetWorld()->GetTimeSeconds();
-	auto TimeToUse = TimeInSeconds - SecondsAtLastCheck;
-	SecondsAtLastCheck = TimeInSeconds;
-
-	CurrentDateTime += FTimespan(0, 0, (int32) TimeToUse * TimeMultiplier);
+	
+	CurrentDateTime = StartDateTime + FTimespan(0, 0, (int32) (TimeInSeconds * TimeMultiplier));
 	GetTime();
 	/*int32 TimeMultiplier = 15;
 	int32 ModMinutes = (CurrentDateTime.GetMinute + TimeToUse / TimeMultiplier) % 60;
