@@ -10,7 +10,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Animation/AnimInstance.h"
 #include "FIPlayerController.h"
-
+#include "Misc/DateTime.h"
+#include "Misc/Timespan.h"
+#include <TimerManager.h>
 //////////////////////////////////////////////////////////////////////////
 // AFollowInstructionsCharacter
 
@@ -41,6 +43,11 @@ void AFollowInstructionsCharacter::BeginPlay() {
 	Super::BeginPlay();
 	PlayerController = Cast<AFIPlayerController>(GetController());
 	//PlayerCamera->AttachTo(GetMesh(), "Head");
+	StartDateTime = FDateTime(2002, 5, 15, 19);
+	CurrentDateTime = FDateTime(2002, 5, 15, 19);
+	SecondsAtLastCheck = 0.f;
+	FTimerHandle Timerhandle;
+	GetWorldTimerManager().SetTimer(Timerhandle, this, &AFollowInstructionsCharacter::UpdateCurrentDateTime, 15.0f, true);
 }
 
 void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
@@ -60,6 +67,10 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFollowInstructionsCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("TurnRight", this, &AFollowInstructionsCharacter::TurnRight);
 	PlayerInputComponent->BindAxis("LookUp", this, &AFollowInstructionsCharacter::LookUp);
+}
+
+void AFollowInstructionsCharacter::GetTime() {
+	UE_LOG(LogTemp, Warning, TEXT("Game Time: %s"), *CurrentDateTime.ToString());
 }
 
 float AFollowInstructionsCharacter::GetRunSpeed() { return RunSpeed; }
@@ -86,8 +97,7 @@ void AFollowInstructionsCharacter::CheckPhoneStart() {
 			AnimInstance->Montage_Play(CheckMontage, 1.0f);
 			AnimInstance->Montage_JumpToSection(FName("CheckTime"), CheckMontage);
 		}
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("GetTimeSeconds: %f"), Time);
+		GetTime();
 	}
 }
 
@@ -135,6 +145,21 @@ void AFollowInstructionsCharacter::ShiftDown() {
 void AFollowInstructionsCharacter::ShiftUp() {
 	bIsSprinting = false;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void AFollowInstructionsCharacter::UpdateCurrentDateTime() {
+	auto TimeInSeconds = GetWorld()->GetTimeSeconds();
+	auto TimeToUse = TimeInSeconds - SecondsAtLastCheck;
+	SecondsAtLastCheck = TimeInSeconds;
+
+	CurrentDateTime += FTimespan(0, 0, (int32) TimeToUse * 4);
+	GetTime();
+	/*int32 TimeMultiplier = 15;
+	int32 ModMinutes = (CurrentDateTime.GetMinute + TimeToUse / TimeMultiplier) % 60;
+	if (ModMinutes > 0) {
+		CurrentDateTime.
+	}*/
+	
 }
 
 void AFollowInstructionsCharacter::MoveRight(float Value) {

@@ -59,15 +59,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Location")
 	FDateTime CurrentDateTime;
 
+
+
 private:
-	
+	float SecondsAtLastCheck;
 	
 	
 
 protected:
 	virtual void BeginPlay() override;
 
-	/** Called for forwards/backward input */
 	void MoveForward(float Value);
 	void CheckPhoneStart();
 	void CheckPhoneEnd();
@@ -78,13 +79,15 @@ protected:
 	void LookUp(float Value);
 	void ShiftDown();
 	void ShiftUp();
+	void UpdateCurrentDateTime();
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
 public:
+	void GetTime();
+
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetPlayerCamera() const { return PlayerCamera; }
 	
