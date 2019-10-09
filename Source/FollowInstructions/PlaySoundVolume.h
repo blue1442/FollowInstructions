@@ -31,6 +31,25 @@ public:
 	bool bPlayFromVolume;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	bool bPlayDuringTimesOnly;
+
+	/* remember its military time! integer between 0-24*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	int32 StartHourActive;
+
+	/* remember its military time! integer between 0-24*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	int32 EndHourActive;
+
+	/*enter integer between 0 and 60*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	int32 StartMinuteActive;
+
+	/*enter integer between 0 and 60*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	int32 EndMinuteActive;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
 	int32 NumOfTimesToPlay;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
@@ -45,9 +64,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnOverlapBegin(class AActor* OverlappedActor, class AActor* OtherActor);
+	virtual void PlayerTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	// declare overlap end function
 	UFUNCTION()
-	void OnOverlapEnd(class AActor* OverlappedActor, class AActor* OtherActor);
+	virtual void PlayerTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

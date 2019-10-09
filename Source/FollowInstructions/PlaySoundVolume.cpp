@@ -18,8 +18,8 @@ APlaySoundVolume::APlaySoundVolume() {
 // Called when the game starts or when spawned
 void APlaySoundVolume::BeginPlay() {
 	Super::BeginPlay();
-	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AUOEnemySpawner::EnemyTriggerBeginOverlap);
-	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &AUOEnemySpawner::EnemyTriggerEndOverlap);
+	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APlaySoundVolume::PlayerTriggerBeginOverlap);
+	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &APlaySoundVolume::PlayerTriggerEndOverlap);
 }
 
 // Called every frame
@@ -28,11 +28,13 @@ void APlaySoundVolume::Tick(float DeltaTime) {
 
 }
 
-void APlaySoundVolume::OnOverlapBegin(class AActor* OverlappedActor, class AActor* OtherActor) {
+void APlaySoundVolume::PlayerTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 
 }
 
-void APlaySoundVolume::OnOverlapEnd(class AActor* OverlappedActor, class AActor* OtherActor) {
+void APlaySoundVolume::PlayerTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 
 }
+
+
 
