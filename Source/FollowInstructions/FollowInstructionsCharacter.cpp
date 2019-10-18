@@ -113,7 +113,6 @@ void AFollowInstructionsCharacter::CheckListStart() {
 			AnimInstance->Montage_JumpToSection(FName("CheckList"), CheckMontage);
 		}
 	}
-
 }
 
 void AFollowInstructionsCharacter::CheckListEnd() {

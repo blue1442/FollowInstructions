@@ -5,7 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PlaySoundVolume.generated.h"
+UENUM(BlueprintType)		//"BlueprintType" is essential to include
+enum class EPlaySound : uint8 { //uint8 is the primary type for enums in unreal (unsigned int 8 bits)
+	EPS_NONE				UMETA(DisplayName = "None"),
 
+	EPS_AtTargetPoint		UMETA(DisplayName = "AtTargetPoint"),
+	EPS_PCloseToFar			UMETA(DisplayName = "PlayerCloseToFar"),
+	EPS_PFarToClose			UMETA(DisplayName = "PlayerFarToClose"),
+	EPS_AtVolume			UMETA(DisplayName = "AtCenterOfVolume"),
+	EPS_FromVolumeToTarget  UMETA(DisplayName = "FromVolumeToTarget"),
+};
 UCLASS()
 class FOLLOWINSTRUCTIONS_API APlaySoundVolume : public AActor
 {
@@ -18,35 +27,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locations")
 	class UBoxComponent* TriggerBox;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Locations", meta = (EditCondition = "bPlayFromTarget"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Audio Component")
+	class UAudioComponent* SoundComponent;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Locations")
+	class USceneComponent* SoundLocation;
+
+	UPROPERTY()
+	class USceneComponent* Root;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Locations")
 	class ATargetPoint* PlayFromActorLocation;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
-	bool bPlayFromTarget;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
-	bool bPlayFromPlayer;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
-	bool bPlayFromVolume;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings" )
 	bool bPlayDuringTimesOnly;
 
-	/* remember its military time! integer between 0-24*/
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	EPlaySound HowToPlaySound;
+
+	/* remember its military time! integer between 0-24*/
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings", meta = (EditCondition = "bPlayDuringTimesOnly"))
 	int32 StartHourActive;
 
 	/* remember its military time! integer between 0-24*/
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings", meta = (EditCondition = "bPlayDuringTimesOnly"))
 	int32 EndHourActive;
 
 	/*enter integer between 0 and 60*/
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings", meta = (EditCondition = "bPlayDuringTimesOnly"))
 	int32 StartMinuteActive;
 
 	/*enter integer between 0 and 60*/
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings", meta = (EditCondition = "bPlayDuringTimesOnly"))
 	int32 EndMinuteActive;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
@@ -55,9 +67,14 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
 	int32 NumOfTimesToPlayed;
 
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	float TimeToTravel;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void PlaySoundAtLocation(FVector Location);
+	void PlaySoundToAndFrom(FVector StartLocation, FVector EndLocation);
 
 public:	
 	// Called every frame
