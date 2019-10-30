@@ -43,17 +43,28 @@ void APlaySoundVolume::BeginPlay() {
 }
 
 void APlaySoundVolume::PlaySoundAtLocation(FVector Location) {
-	FLatentActionInfo LatentInfo;
-	LatentInfo.CallbackTarget = this;
-	UKismetSystemLibrary::MoveComponentTo(AudioComponent, Location, FRotator(0.0f, 0.0f, 0.0f), 
-									  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
+	//FLatentActionInfo LatentInfo;
+	//LatentInfo.CallbackTarget = this;
+	//UKismetSystemLibrary::MoveComponentTo(AudioComponent, Location, FRotator(0.0f, 0.0f, 0.0f), 
+	//								  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioComponent->Sound, Location, 
 											1.0f, 1.0f, 0.0f, AudioComponent->AttenuationSettings);
 }
 
 void APlaySoundVolume::PlaySoundToAndFrom(FVector StartLocation, FVector EndLocation) {
 	TargetActor->SetActorLocation(StartLocation);
-	BP_MoveTarget(EndLocation, TimeToTravel);
+	//UGameplayStatics::SpawnSoundAttached(AudioComponent->Sound, AudioComponent);
+	
+	//BP_MoveTarget(EndLocation, TimeToTravel);
+	//FLatentActionInfo LatentInfo;
+	//LatentInfo.CallbackTarget = nullptr;
+	/*UKismetSystemLibrary::MoveComponentTo(AudioComponent, EndLocation, FRotator(0.0f, 0.0f, 0.0f),
+										  true, true, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);*/
+	FLatentActionInfo LatentInfo;
+	LatentInfo.CallbackTarget = this;
+	UKismetSystemLibrary::MoveComponentTo(AudioComponent, EndLocation - StartLocation, FRotator(0.0f, 0.0f, 0.0f),
+										  false, false, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);
+	AudioComponent->Play(0.f);
 }
 
 // Called every frame
@@ -63,16 +74,15 @@ void APlaySoundVolume::Tick(float DeltaTime) {
 
 void APlaySoundVolume::PlayerTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 	if (!AudioComponent->Sound || NumOfTimesToPlayed == NumOfTimesToPlay) { return; }
-	
+	auto MainChar = Cast<AFollowInstructionsCharacter>(OtherActor);
+	if (!MainChar) return;
+
 	if (bPlayDuringTimesOnly) {
-		auto MainChar = Cast<AFollowInstructionsCharacter>(OtherActor);
-		if (MainChar) {
-			FDateTime CurrentTime = MainChar->CurrentDateTime;
-			FDateTime StartTime = FDateTime(2002, 5, 15, StartHourActive, StartMinuteActive);
-			FDateTime EndTime = FDateTime(2002, 5, 15, EndHourActive, EndHourActive);
-			if (CurrentTime < StartTime || CurrentTime > EndTime) {
-				return;
-			}
+		FDateTime CurrentTime = MainChar->CurrentDateTime;
+		FDateTime StartTime = FDateTime(2002, 5, 15, StartHourActive, StartMinuteActive);
+		FDateTime EndTime = FDateTime(2002, 5, 15, EndHourActive, EndHourActive);
+		if (CurrentTime < StartTime || CurrentTime > EndTime) {
+			return;
 		}
 	}
 
@@ -84,6 +94,7 @@ void APlaySoundVolume::PlayerTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 		break;
 
 	case EPlaySound::EPS_AtVolume:
+		PlaySoundAtLocation(GetActorLocation());
 		break;
 
 	case EPlaySound::EPS_FromVolumeToTarget:
@@ -92,9 +103,16 @@ void APlaySoundVolume::PlayerTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 		break;
 
 	case EPlaySound::EPS_PCloseToFar:
+		PlaySoundToAndFrom(MainChar->GetCloseBehindArrow(), MainChar->GetFarBehindArrow());
 		break;
 
 	case EPlaySound::EPS_PFarToClose:
+		PlaySoundToAndFrom(MainChar->GetFarBehindArrow(), MainChar->GetCloseBehindArrow());
+		break;
+
+	case EPlaySound::EPS_FromTargetToVolume:
+		if (!TargetActor) return;
+		PlaySoundToAndFrom(TargetActor->GetActorLocation(), GetActorLocation());
 		break;
 
 	default:

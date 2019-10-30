@@ -14,6 +14,7 @@ enum class EPlaySound : uint8 { //uint8 is the primary type for enums in unreal 
 	EPS_PFarToClose			UMETA(DisplayName = "PlayerFarToClose"),
 	EPS_AtVolume			UMETA(DisplayName = "AtCenterOfVolume"),
 	EPS_FromVolumeToTarget  UMETA(DisplayName = "FromVolumeToTarget"),
+	EPS_FromTargetToVolume  UMETA(DisplayName = "FromTargetToVolume")
 };
 UCLASS()
 class FOLLOWINSTRUCTIONS_API APlaySoundVolume : public AActor
