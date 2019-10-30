@@ -9,6 +9,8 @@
 #include <Engine/LatentActionManager.h>
 #include "FollowInstructionsCharacter.h"
 #include <GameFramework/Actor.h>
+#include "Kismet/GameplayStatics.h"
+#include <Sound/SoundBase.h>
 
 // Sets default values
 APlaySoundVolume::APlaySoundVolume() {
@@ -21,13 +23,16 @@ APlaySoundVolume::APlaySoundVolume() {
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("SoundTrigger"));
 	TriggerBox->SetupAttachment(Root);
 
-	SoundLocation = CreateDefaultSubobject<USceneComponent>(TEXT("SoundActor"));
-	SoundLocation->SetupAttachment(Root);
+	//SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SoundActor"));
+	//SceneComponent->SetupAttachment(Root);
 
-	SoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SoundToPlay"));
-	SoundComponent->SetupAttachment(SoundLocation);
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("SoundToPlay"));
+	AudioComponent->SetupAttachment(Root);
+	AudioComponent->bAutoActivate = false;
+
 	NumOfTimesToPlayed = 0;
 	NumOfTimesToPlay = 1;
+	TimeToTravel = 1.f;
 }
 
 // Called when the game starts or when spawned
@@ -40,29 +45,24 @@ void APlaySoundVolume::BeginPlay() {
 void APlaySoundVolume::PlaySoundAtLocation(FVector Location) {
 	FLatentActionInfo LatentInfo;
 	LatentInfo.CallbackTarget = this;
-	UKismetSystemLibrary::MoveComponentTo(SoundLocation, Location, FRotator(0.0f, 0.0f, 0.0f), 
-										  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
-	SoundComponent->Play();
+	UKismetSystemLibrary::MoveComponentTo(AudioComponent, Location, FRotator(0.0f, 0.0f, 0.0f), 
+									  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioComponent->Sound, Location, 
+											1.0f, 1.0f, 0.0f, AudioComponent->AttenuationSettings);
 }
 
 void APlaySoundVolume::PlaySoundToAndFrom(FVector StartLocation, FVector EndLocation) {
-	FLatentActionInfo LatentInfo;
-	LatentInfo.CallbackTarget = nullptr;
-	UKismetSystemLibrary::MoveComponentTo(SoundLocation, StartLocation, FRotator(0.0f, 0.0f, 0.0f),
-										  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
-	LatentInfo.CallbackTarget = this;
-	UKismetSystemLibrary::MoveComponentTo(SoundLocation, EndLocation, FRotator(0.0f, 0.0f, 0.0f),
-										  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
+	TargetActor->SetActorLocation(StartLocation);
+	BP_MoveTarget(EndLocation, TimeToTravel);
 }
 
 // Called every frame
 void APlaySoundVolume::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
 }
 
 void APlaySoundVolume::PlayerTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-	if (!SoundComponent->Sound || NumOfTimesToPlayed == NumOfTimesToPlay) { return; }
+	if (!AudioComponent->Sound || NumOfTimesToPlayed == NumOfTimesToPlay) { return; }
 	
 	if (bPlayDuringTimesOnly) {
 		auto MainChar = Cast<AFollowInstructionsCharacter>(OtherActor);
@@ -78,12 +78,17 @@ void APlaySoundVolume::PlayerTriggerBeginOverlap(UPrimitiveComponent* Overlapped
 
 	switch (HowToPlaySound) {
 	case EPlaySound::EPS_AtTargetPoint:
+		if (!TargetActor) return;
+		PlaySoundAtLocation(TargetActor->GetActorLocation());
+		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioComponent->Sound, TargetActor->GetActorLocation());
 		break;
 
 	case EPlaySound::EPS_AtVolume:
 		break;
 
 	case EPlaySound::EPS_FromVolumeToTarget:
+		if (!TargetActor) return;
+		PlaySoundToAndFrom(GetActorLocation(), TargetActor->GetActorLocation());
 		break;
 
 	case EPlaySound::EPS_PCloseToFar:
