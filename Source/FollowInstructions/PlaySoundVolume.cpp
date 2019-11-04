@@ -38,6 +38,9 @@ APlaySoundVolume::APlaySoundVolume() {
 // Called when the game starts or when spawned
 void APlaySoundVolume::BeginPlay() {
 	Super::BeginPlay();
+	//AudioComponent->SetWorldLocation(GetActorLocation());
+	AudioComponent->SetAbsolute(true);
+
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APlaySoundVolume::PlayerTriggerBeginOverlap);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &APlaySoundVolume::PlayerTriggerEndOverlap);
 }
@@ -47,23 +50,17 @@ void APlaySoundVolume::PlaySoundAtLocation(FVector Location) {
 	//LatentInfo.CallbackTarget = this;
 	//UKismetSystemLibrary::MoveComponentTo(AudioComponent, Location, FRotator(0.0f, 0.0f, 0.0f), 
 	//								  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioComponent->Sound, Location, 
-											1.0f, 1.0f, 0.0f, AudioComponent->AttenuationSettings);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioComponent->Sound, Location,
+		1.0f, 1.0f, 0.0f, AudioComponent->AttenuationSettings);
 }
 
 void APlaySoundVolume::PlaySoundToAndFrom(FVector StartLocation, FVector EndLocation) {
-	TargetActor->SetActorLocation(StartLocation);
-	//UGameplayStatics::SpawnSoundAttached(AudioComponent->Sound, AudioComponent);
-	
-	//BP_MoveTarget(EndLocation, TimeToTravel);
-	//FLatentActionInfo LatentInfo;
-	//LatentInfo.CallbackTarget = nullptr;
-	/*UKismetSystemLibrary::MoveComponentTo(AudioComponent, EndLocation, FRotator(0.0f, 0.0f, 0.0f),
-										  true, true, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);*/
 	FLatentActionInfo LatentInfo;
 	LatentInfo.CallbackTarget = this;
-	UKismetSystemLibrary::MoveComponentTo(AudioComponent, EndLocation - StartLocation, FRotator(0.0f, 0.0f, 0.0f),
-										  false, false, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);
+	FVector RelativeChange = EndLocation - StartLocation;
+	AudioComponent->SetWorldLocation(StartLocation);
+	UKismetSystemLibrary::MoveComponentTo(AudioComponent, RelativeChange, FRotator(0.0f, 0.0f, 0.0f),
+		false, false, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);
 	AudioComponent->Play(0.f);
 }
 
