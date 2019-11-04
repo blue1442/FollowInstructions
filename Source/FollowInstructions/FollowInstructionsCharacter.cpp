@@ -13,6 +13,7 @@
 #include "Misc/DateTime.h"
 #include "Misc/Timespan.h"
 #include <TimerManager.h>
+#include <Components/ArrowComponent.h>
 //////////////////////////////////////////////////////////////////////////
 // AFollowInstructionsCharacter
 
@@ -31,6 +32,13 @@ AFollowInstructionsCharacter::AFollowInstructionsCharacter() {
 	PlayerCamera->SetupAttachment(GetCapsuleComponent());
 	//PlayerCamera->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
 	PlayerCamera->bUsePawnControlRotation = true;
+
+
+	FarBehindArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("FarBehindArrow"));
+	FarBehindArrow->SetupAttachment(GetCapsuleComponent());
+
+	CloseBehindArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CloseBehindArrow"));
+	CloseBehindArrow->SetupAttachment(GetCapsuleComponent());
 
 	bCheckingList = false;
 	bCheckingPhone = false;
@@ -70,6 +78,14 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 
 void AFollowInstructionsCharacter::GetTime() {
 	UE_LOG(LogTemp, Warning, TEXT("Game Time: %s"), *CurrentDateTime.ToString());
+}
+
+FVector AFollowInstructionsCharacter::GetCloseBehindArrow() {
+	return CloseBehindArrow->GetComponentLocation();
+}
+
+FVector AFollowInstructionsCharacter::GetFarBehindArrow() {
+	return FarBehindArrow->GetComponentLocation();
 }
 
 float AFollowInstructionsCharacter::GetRunSpeed() { return RunSpeed; }
