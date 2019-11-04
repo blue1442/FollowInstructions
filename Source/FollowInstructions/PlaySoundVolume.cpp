@@ -38,18 +38,12 @@ APlaySoundVolume::APlaySoundVolume() {
 // Called when the game starts or when spawned
 void APlaySoundVolume::BeginPlay() {
 	Super::BeginPlay();
-	//AudioComponent->SetWorldLocation(GetActorLocation());
 	AudioComponent->SetAbsolute(true);
-
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APlaySoundVolume::PlayerTriggerBeginOverlap);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &APlaySoundVolume::PlayerTriggerEndOverlap);
 }
 
 void APlaySoundVolume::PlaySoundAtLocation(FVector Location) {
-	//FLatentActionInfo LatentInfo;
-	//LatentInfo.CallbackTarget = this;
-	//UKismetSystemLibrary::MoveComponentTo(AudioComponent, Location, FRotator(0.0f, 0.0f, 0.0f), 
-	//								  false, false, 0.0f, false, EMoveComponentAction::Type::Move, LatentInfo);
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), AudioComponent->Sound, Location,
 		1.0f, 1.0f, 0.0f, AudioComponent->AttenuationSettings);
 }
@@ -59,8 +53,9 @@ void APlaySoundVolume::PlaySoundToAndFrom(FVector StartLocation, FVector EndLoca
 	LatentInfo.CallbackTarget = this;
 	FVector RelativeChange = EndLocation - StartLocation;
 	AudioComponent->SetWorldLocation(StartLocation);
+	BP_MoveTarget(EndLocation, TimeToTravel);
 	UKismetSystemLibrary::MoveComponentTo(AudioComponent, RelativeChange, FRotator(0.0f, 0.0f, 0.0f),
-		false, false, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);
+										  false, false, TimeToTravel, false, EMoveComponentAction::Type::Move, LatentInfo);
 	AudioComponent->Play(0.f);
 }
 
