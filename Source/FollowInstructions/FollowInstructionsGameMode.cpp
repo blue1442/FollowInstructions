@@ -7,7 +7,7 @@
 AFollowInstructionsGameMode::AFollowInstructionsGameMode()
 {
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/FollowInstructions/Blueprints/MainChar_BP"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/FollowInstructions/Blueprints/MainCharBps/MainChar_BP"));
 	if (PlayerPawnBPClass.Class != NULL) {
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	} else {
