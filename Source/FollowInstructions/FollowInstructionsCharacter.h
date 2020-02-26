@@ -62,6 +62,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Location")
 	int32 TimeMultiplier = 4;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UArrowComponent* FarBehindArrow;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sound")
+	class UArrowComponent* CloseBehindArrow;
+
 private:
 	
 protected:
@@ -89,6 +95,12 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetPlayerCamera() const { return PlayerCamera; }
 	
+	UFUNCTION(BlueprintCallable)
+	FVector GetCloseBehindArrow();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetFarBehindArrow();
+
 	UFUNCTION(BlueprintCallable)
 	float GetRunSpeed();
 

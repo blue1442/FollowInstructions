@@ -14,6 +14,7 @@ enum class EPlaySound : uint8 { //uint8 is the primary type for enums in unreal 
 	EPS_PFarToClose			UMETA(DisplayName = "PlayerFarToClose"),
 	EPS_AtVolume			UMETA(DisplayName = "AtCenterOfVolume"),
 	EPS_FromVolumeToTarget  UMETA(DisplayName = "FromVolumeToTarget"),
+	EPS_FromTargetToVolume  UMETA(DisplayName = "FromTargetToVolume")
 };
 UCLASS()
 class FOLLOWINSTRUCTIONS_API APlaySoundVolume : public AActor
@@ -27,17 +28,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Locations")
 	class UBoxComponent* TriggerBox;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Audio Component")
-	class UAudioComponent* SoundComponent;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	class UAudioComponent* AudioComponent;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Locations")
-	class USceneComponent* SoundLocation;
+	//UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Locations")
+	//class USceneComponent* SceneComponent;
 
 	UPROPERTY()
 	class USceneComponent* Root;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Locations")
-	class ATargetPoint* PlayFromActorLocation;
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings")
+	class ATargetPoint* TargetActor;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "PlaySettings" )
 	bool bPlayDuringTimesOnly;
@@ -79,6 +80,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "MoveTarget"))
+	void BP_MoveTarget(FVector EndLocation, float TravelTime);
 
 	UFUNCTION()
 	virtual void PlayerTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
