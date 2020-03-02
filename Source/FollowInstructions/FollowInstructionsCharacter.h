@@ -38,8 +38,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
 	float RunSpeed = 400;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	float BaseRunSpeed = 400;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
 	float WalkSpeed = 300;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	float BaseWalkSpeed = 300;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
 	bool bCheckingPhone;
@@ -103,6 +109,18 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetRunSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	float GetBaseRunSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	float GetBaseWalkSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	void SetRunSpeed(float a);
+
+	UFUNCTION(BlueprintCallable)
+	void SetWalkSpeed(float a);
 
 	UFUNCTION(BlueprintCallable)
 	float GetWalkSpeed();
