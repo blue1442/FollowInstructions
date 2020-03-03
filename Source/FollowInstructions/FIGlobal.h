@@ -30,7 +30,9 @@ enum class EPlayerLocation : uint8 { //uint8 is the primary type for enums in un
 	EPLS_SFStaircase		UMETA(DisplayName = "SecondFloorStaircase"),
 
 	EPLS_Attic				UMETA(DisplayName = "Attic"),
-	EPLS_Basement			UMETA(DisplayName = "Basement")
+	EPLS_Basement			UMETA(DisplayName = "Basement"),
+
+	EPLS_PanicRoom			UMETA(DisplayName = "PanicRoom")
 };
 
 UCLASS()
