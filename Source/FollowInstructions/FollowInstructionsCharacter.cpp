@@ -93,14 +93,6 @@ float AFollowInstructionsCharacter::GetWalkSpeed() { return WalkSpeed; }
 float AFollowInstructionsCharacter::GetBaseRunSpeed() { return BaseRunSpeed; }
 float AFollowInstructionsCharacter::GetBaseWalkSpeed() { return BaseWalkSpeed; }
 
-void AFollowInstructionsCharacter::SetRunSpeed(float a) {
-	RunSpeed = a;
-}
-
-void AFollowInstructionsCharacter::SetWalkSpeed(float a) {
-	WalkSpeed = a;
-}
-
 void AFollowInstructionsCharacter::SetCharacterLocation(EPlayerLocation NewLocation) {
 	CurrentLocation = NewLocation;
 }
