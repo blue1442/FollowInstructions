@@ -90,6 +90,8 @@ FVector AFollowInstructionsCharacter::GetFarBehindArrow() {
 
 float AFollowInstructionsCharacter::GetRunSpeed() { return RunSpeed; }
 float AFollowInstructionsCharacter::GetWalkSpeed() { return WalkSpeed; }
+float AFollowInstructionsCharacter::GetBaseRunSpeed() { return BaseRunSpeed; }
+float AFollowInstructionsCharacter::GetBaseWalkSpeed() { return BaseWalkSpeed; }
 
 void AFollowInstructionsCharacter::SetCharacterLocation(EPlayerLocation NewLocation) {
 	CurrentLocation = NewLocation;

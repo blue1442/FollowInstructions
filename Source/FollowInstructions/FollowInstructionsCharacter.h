@@ -35,11 +35,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
 	class AFIPlayerController* PlayerController;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
 	float RunSpeed = 400;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	float BaseRunSpeed = 400;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
 	float WalkSpeed = 300;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	float BaseWalkSpeed = 300;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Controller")
 	bool bCheckingPhone;
@@ -103,6 +109,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetRunSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	float GetBaseRunSpeed();
+
+	UFUNCTION(BlueprintCallable)
+	float GetBaseWalkSpeed();
 
 	UFUNCTION(BlueprintCallable)
 	float GetWalkSpeed();
