@@ -51,8 +51,8 @@ void AFollowInstructionsCharacter::BeginPlay() {
 	Super::BeginPlay();
 	PlayerController = Cast<AFIPlayerController>(GetController());
 	//PlayerCamera->AttachTo(GetMesh(), "Head");
-	StartDateTime = FDateTime(2002, 5, 15, 19);
-	CurrentDateTime = FDateTime(2002, 5, 15, 19);
+	StartDateTime = FDateTime(2002, 5, 15, 19, 30);
+	CurrentDateTime = FDateTime(2002, 5, 15, 19, 30);
 	FTimerHandle Timerhandle;
 	GetWorldTimerManager().SetTimer(Timerhandle, this, &AFollowInstructionsCharacter::UpdateCurrentDateTime, 1.0f, true);
 }
