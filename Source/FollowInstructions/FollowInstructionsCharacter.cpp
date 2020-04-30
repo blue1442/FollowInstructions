@@ -64,11 +64,11 @@ void AFollowInstructionsCharacter::SetupPlayerInputComponent(class UInputCompone
 	PlayerInputComponent->BindAction("ShiftDown", IE_Pressed, this, &AFollowInstructionsCharacter::ShiftDown);
 	PlayerInputComponent->BindAction("ShiftDown", IE_Released, this, &AFollowInstructionsCharacter::ShiftUp);
 
-	PlayerInputComponent->BindAction("QButton", IE_Pressed, this, &AFollowInstructionsCharacter::CheckPhoneStart);
-	PlayerInputComponent->BindAction("QButton", IE_Released, this, &AFollowInstructionsCharacter::CheckPhoneEnd);
+	//PlayerInputComponent->BindAction("QButton", IE_Pressed, this, &AFollowInstructionsCharacter::CheckPhoneStart);
+	//PlayerInputComponent->BindAction("QButton", IE_Released, this, &AFollowInstructionsCharacter::CheckPhoneEnd);
 
-	PlayerInputComponent->BindAction("EButton", IE_Pressed, this, &AFollowInstructionsCharacter::CheckListStart);
-	PlayerInputComponent->BindAction("EButton", IE_Released, this, &AFollowInstructionsCharacter::CheckListEnd);
+	//PlayerInputComponent->BindAction("EButton", IE_Pressed, this, &AFollowInstructionsCharacter::CheckListStart);
+	//PlayerInputComponent->BindAction("EButton", IE_Released, this, &AFollowInstructionsCharacter::CheckListEnd);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFollowInstructionsCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFollowInstructionsCharacter::MoveRight);
