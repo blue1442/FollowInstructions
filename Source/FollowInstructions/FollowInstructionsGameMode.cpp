@@ -6,6 +6,7 @@
 
 AFollowInstructionsGameMode::AFollowInstructionsGameMode()
 {
+	//APawn, then UObject
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/FollowInstructions/Blueprints/MainCharBps/MainChar_BP"));
 	static ConstructorHelpers::FClassFinder<UObject> PlayerHUDClass(TEXT("/Game/FollowInstructions/Blueprints/MainCharBps/Hud"));
